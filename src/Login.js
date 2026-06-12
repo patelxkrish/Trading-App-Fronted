@@ -1,43 +1,41 @@
 import React, { useState } from "react";
 import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
-  const [username, setUsername] = useState("");
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.post(
-        "https://trading-app-backend-pf6b.onrender.com/register",
+        "https://trading-app-backend-pf6b.onrender.com/login",
         {
-          username,
           email,
           password,
         },
       );
 
-      setMessage(res.data.message);
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
 
-      if (res.status >= 200 && res.status < 300) {
-        setTimeout(() => navigate("/login"), 1000);
-      }
+      setMessage("Login successful!");
+
+      window.location.href = `https://trading-app-dashboard-omega.vercel.app?token=${res.data.accessToken}`;
     } catch (err) {
-      if (err.response) {
-        setMessage(err.response.data.message);
-      } else {
-        setMessage("Signup failed");
-      }
+      setMessage(err.response?.data?.message || "Login failed");
     }
   };
-  const handleLogin = () => {
+
+  const handleSignup = () => {
     navigate("/login");
   };
+
   return (
     <div
       className="d-flex justify-content-center align-items-center bg-light"
@@ -50,24 +48,9 @@ const Signup = () => {
         {" "}
         <div className="card-body p-4">
           {" "}
-          <h2 className="text-center mb-4 fw-bold">Create Account</h2>
-          <form onSubmit={handleSignup}>
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label">
-                Username
-              </label>
-
-              <input
-                id="username"
-                type="text"
-                className="form-control"
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-
+          <h2 className="text-center fw-bold mb-4">Welcome Back </h2>
+          <p className="text-center text-muted mb-4">Login to your account</p>
+          <form onSubmit={handleLogin}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email Address
@@ -77,7 +60,7 @@ const Signup = () => {
                 id="email"
                 type="email"
                 className="form-control"
-                placeholder="Enter email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -93,7 +76,7 @@ const Signup = () => {
                 id="password"
                 type="password"
                 className="form-control"
-                placeholder="Enter password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -104,21 +87,21 @@ const Signup = () => {
               type="submit"
               className="btn btn-primary w-100 py-2 fw-semibold"
             >
-              Register
+              Login
             </button>
           </form>
-          <p className="text-muted mt-3">Already have an account?</p>
+          <p className="text-muted mt-3">Didn't have an account?</p>
           <button
             type="button"
             className="btn btn-secondary w-100 py-2 fw-semibold"
-            onClick={handleLogin}
+            onClick={handleSignup}
           >
-            Login
+            Signup
           </button>
           {message && (
             <div
               className={`alert mt-3 ${
-                message.toLowerCase().includes("success")
+                message.toLowerCase().includes("successful")
                   ? "alert-success"
                   : "alert-danger"
               }`}
@@ -132,4 +115,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
