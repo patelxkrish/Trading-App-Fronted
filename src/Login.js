@@ -27,6 +27,7 @@ const Login = () => {
       setMessage("Login successful!");
 
       window.location.href = `https://trading-app-dashboard-omega.vercel.app?token=${res.data.accessToken}`;
+      // window.location.href = `http://localhost:3000?token=${res.data.accessToken}`;
     } catch (err) {
       setMessage(err.response?.data?.message || "Login failed");
     }
